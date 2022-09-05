@@ -1,6 +1,7 @@
 import csv
 import io
 from rest_framework.response import Response
+from rest_framework.serializers import ValidationError
 from rest_framework import generics, status
 from .serializers import BillSerializer
 
@@ -19,7 +20,7 @@ class BillsAPIView(generics.CreateAPIView):
         for row in reader:
             try:
                 if len(row) != len(field_names):
-                    continue
+                    raise ValidationError("Некорректное количество полей")
                 data = dict(zip(field_names, row))
                 serializer = BillSerializer(data=data)
                 serializer.is_valid(raise_exception=True)
