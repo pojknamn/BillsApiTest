@@ -1,12 +1,16 @@
 import csv
 import io
+
+from django.forms import model_to_dict
 from rest_framework.response import Response
 from rest_framework.serializers import ValidationError
+from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework import generics, status
 from .serializers import BillSerializer
+from .models import Bill
 
 
-class BillsAPIView(generics.CreateAPIView):
+class BillsCreateAPIView(generics.CreateAPIView):
 
     def post(self, request, *args, **kwargs):
         file = request.FILES['filename'].file
@@ -30,3 +34,14 @@ class BillsAPIView(generics.CreateAPIView):
         if errors:
             return Response({"Failed": errors}, status=status.HTTP_200_OK)
         return Response({"success": "All data saved"})
+
+
+class BillsAPIView(generics.ListAPIView):
+    serializer_class = BillSerializer
+
+
+    def get_queryset(self):
+        name = self.request.query_params.get('client_name')
+        if not name:
+            return Bill.objects.all()
+        return Bill.objects.filter(client_name=name)

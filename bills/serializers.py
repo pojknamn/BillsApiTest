@@ -24,6 +24,14 @@ def number_validator(num):
     return num
 
 
+def int_validator(num):
+    try:
+        num = int(num)
+    except ValueError:
+        raise serializers.ValidationError('Не валидные данные')
+    return num
+
+
 def date_validate(date):
     try:
         date = datetime.datetime.strptime(date, "%d.%m.%Y")
@@ -36,7 +44,7 @@ class BillSerializer(serializers.Serializer):
     client_name = serializers.CharField(validators=[name_validator])
     client_org = serializers.CharField(validators=[name_validator])
     service = serializers.CharField(validators=[service_validator])
-    bill_no = serializers.IntegerField(validators=[number_validator])
+    bill_no = serializers.IntegerField(validators=[int_validator])
     bill_sum = serializers.DecimalField(validators=[number_validator], max_digits=12,
                                         decimal_places=2)
     bill_date = serializers.DateField(input_formats=['%d.%m.%Y'])
