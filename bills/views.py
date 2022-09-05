@@ -39,9 +39,12 @@ class BillsCreateAPIView(generics.CreateAPIView):
 class BillsAPIView(generics.ListAPIView):
     serializer_class = BillSerializer
 
-
     def get_queryset(self):
         name = self.request.query_params.get('client_name')
-        if not name:
+        organisation = self.request.query_params.get('client_org')
+        if name:
+            return Bill.objects.filter(client_name=name)
+        elif organisation:
+            return Bill.objects.filter(client_org=organisation)
+        else:
             return Bill.objects.all()
-        return Bill.objects.filter(client_name=name)
